@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
@@ -160,6 +161,39 @@ namespace PTZ
         public static PTZDevice GetDevice(string name, PTZType type)
         {
             return new PTZDevice(name, type);
+        }
+
+
+        public object ZoomIn()
+        {
+            int newZoom = GetCurrentZoom() + 10;
+
+            newZoom = Math.Max(ZoomMin, newZoom);
+            newZoom = Math.Min(ZoomMax, newZoom);
+            _camControl.Set(CameraControlProperty.Zoom, newZoom, CameraControlFlags.Manual);
+            return GetCameraZoomInfo();
+        }
+
+        public object ZoomOut()
+        {
+            int newZoom = GetCurrentZoom() - 10;
+
+            newZoom = Math.Max(ZoomMin, newZoom);
+            newZoom = Math.Min(ZoomMax, newZoom);
+            _camControl.Set(CameraControlProperty.Zoom, newZoom, CameraControlFlags.Manual);
+            return GetCameraZoomInfo();
+        }
+
+
+        public object GetCameraZoomInfo()
+        {
+            dynamic zoomInfo = new ExpandoObject();
+            zoomInfo.ZoomMin = ZoomMin;
+            zoomInfo.ZoomMax = ZoomMax;
+            zoomInfo.ZoomStep = ZoomStep;
+            zoomInfo.ZoomDefault = ZoomDefault;
+            zoomInfo.CurrentZoom = GetCurrentZoom();
+            return zoomInfo;
         }
     }
 
