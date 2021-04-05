@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using DirectShowLib;
 
 namespace PTZ
@@ -257,6 +258,48 @@ namespace PTZ
             [MarshalAs(UnmanagedType.U4)]
             public int Dummy;
             // Dummy added to get a succesful return of the Get, Set function
+        }
+    }
+
+    public class PTZDeviceHelper
+    {
+        public async Task<object> GetCameraZoomInfo(object input)
+        {
+
+            string deviceName = (string)input;
+            //Console.WriteLine("Device Name:" + deviceName);
+            var device = PTZDevice.GetDevice(deviceName, PTZType.Relative);
+
+            return device.GetCameraZoomInfo();
+        }
+
+        public async Task<object> ZoomIn(object input)
+        {
+            IDictionary<String, Object> properties = (IDictionary<String, Object>)input;
+            string deviceName = (string)properties["name"];
+            var device = PTZDevice.GetDevice(deviceName, PTZType.Relative);
+
+            return device.ZoomIn();
+        }
+
+        public async Task<object> ZoomOut(object input)
+        {
+            IDictionary<String, Object> properties = (IDictionary<String, Object>)input;
+            string deviceName = (string)properties["name"];
+            var device = PTZDevice.GetDevice(deviceName, PTZType.Relative);
+
+            return device.ZoomOut();
+        }
+
+        public async Task<object> Move(object input)
+        {
+            IDictionary<String, Object> properties = (IDictionary<String, Object>)input;
+            string deviceName = (string)properties["name"];
+            int pan = (int)properties["pan"];
+            int tilt = (int)properties["tilt"];
+            var device = PTZDevice.GetDevice(deviceName, PTZType.Relative);
+            device.Move(pan, tilt);
+            return true;
         }
     }
 }
